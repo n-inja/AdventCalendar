@@ -10,23 +10,17 @@ class Point{
   }
 }
 
-class Vec extends Point {
-  Vec(float nx, float ny){
-    super(nx, ny);
-  }
-}
-
 class Line{
   Point p1, p2;
-  Vec pv, vv;
+  Point pv, vv;
   float l;
   
   Line(Point np1, Point np2){
     p1 = np1;
     p2 = np2;
     l = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
-    pv = new Vec((p2.x - p1.x)/l, (p2.y - p1.y)/l);
-    vv = new Vec(-pv.y, pv.x);
+    pv = new Point((p2.x - p1.x)/l, (p2.y - p1.y)/l);
+    vv = new Point(-pv.y, pv.x);
   }
   Line(float x1, float y1, float x2, float y2){
     this(new Point(x1, y1), new Point(x2, y2));
@@ -38,7 +32,7 @@ class Line{
     drawLine(this);
   }
   
-  Vec delta(){
+  Point delta(){
     return subPoint(p2, p1);
   }
   
@@ -171,19 +165,19 @@ Point addPoint(Point lp, Point rp){
   return new Point(lp.x + rp.x, lp.y + rp.y);
 }
 
-Vec subPoint(Point lp, Point rp){
-  return new Vec(lp.x - rp.x, lp.y - rp.y);
+Point subPoint(Point lp, Point rp){
+  return new Point(lp.x - rp.x, lp.y - rp.y);
 }
 
 Point product(Point lp, float rf){
   return new Point(lp.x * rf, lp.y * rf);
 }
 
-float innerProduct(Point lp, Vec rp){
+float innerProduct(Point lp, Point rp){
   return lp.x * rp.x + lp.y * rp.y;
 }
 
-float innerProduct(Line ll, Vec ru){
+float innerProduct(Line ll, Point ru){
   return innerProduct(ll.delta(), ru);
 }
 
