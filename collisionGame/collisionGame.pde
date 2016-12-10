@@ -7,9 +7,6 @@ class Point{
     x = nx;
     y = ny;
   }
-  void draw(){
-    drawPoint(this);
-  }
 }
 
 class Vec extends Point {
@@ -21,10 +18,11 @@ class Vec extends Point {
 class Line{
   Point p1, p2;
   Vec pv, vv;
+  float l;
   Line(Point np1, Point np2){
     p1 = np1;
     p2 = np2;
-    float l = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+    l = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
     pv = new Vec((p2.x - p1.x)/l, (p2.y - p1.y)/l);
     vv = new Vec(pv.y, -pv.x);
   }
@@ -36,11 +34,8 @@ class Line{
     strokeWeight(1);
     drawLine(this);
   }
-  Point delta(){
+  Vec delta(){
     return subPoint(p2, p1);
-  }
-  float squareDistance(){
-    return (p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y);
   }
   Line clone(){
     return new Line(p1.x, p1.y, p2.x, p2.y);
@@ -60,6 +55,8 @@ class Player{
   void update(ArrayList<Line> ls){
     vel.x = 0;
     vel.y = 0;
+    
+    //keyCheck
     if(isPressLeft){
       vel.x -= 3;
     }
@@ -72,17 +69,18 @@ class Player{
     if(isPressDown){
       vel.y += 3;
     }
+    
     move.p1 = pos;
     move.p2 = addPoint(pos, vel);
-    
+    //Bending
     Line minLine = move.clone();
     float minLength = 10000000;
     for(int i = 0; i < ls.size(); i++){
       Line l = ls.get(i);
       if(isIntersected(move, l) && innerProduct(move.delta(), l.vv) > 0){
         Line collision = bendLine(move, l);
-        if(minLength > collision.squareDistance()){
-          minLength = collision.squareDistance();
+        if(minLength > collision.l){
+          minLength = collision.l;
           minLine = collision;
         }
       }
@@ -90,14 +88,16 @@ class Player{
     if(minLength < 10000000){
       move = minLine;
     }
+    
+    //Folding
     minLine = move.clone();
     minLength = 10000000;
     for(int i = 0; i < ls.size(); i++){
       Line l = ls.get(i);
       if(isIntersected(move, l) && innerProduct(move.delta(), l.vv) > 0){
         Line collision = foldLine(move, l);
-        if(minLength > collision.squareDistance()){
-          minLength = collision.squareDistance();
+        if(minLength > collision.l){
+          minLength = collision.l;
           minLine = collision;
         }
       }
@@ -105,8 +105,11 @@ class Player{
     if(minLength < 10000000){
       move = minLine;
     }
+    
+    //move
     pos = addPoint(pos, move.delta());
   }
+  
   void draw(){
     stroke(0, 0, 0);
     strokeWeight(5);
@@ -164,8 +167,8 @@ Point addPoint(Point lp, Point rp){
   return new Point(lp.x + rp.x, lp.y + rp.y);
 }
 
-Point subPoint(Point lp, Point rp){
-  return new Point(lp.x - rp.x, lp.y - rp.y);
+Vec subPoint(Point lp, Point rp){
+  return new Vec(lp.x - rp.x, lp.y - rp.y);
 }
 
 Point product(Point lp, float rf){
@@ -201,7 +204,6 @@ Line foldLine(Line l1, Line l2) {
   float s2 = ((l2.p2.x - l2.p1.x) * (l2.p1.y - l1.p2.y) - (l2.p2.y - l2.p1.y) * (l2.p1.x - l1.p2.x));
   ans.p2.x = l1.p1.x + (l1.p2.x - l1.p1.x) * s1 / (s1 + s2);
   ans.p2.y = l1.p1.y + (l1.p2.y - l1.p1.y) * s1 / (s1 + s2);
-  ans.p2 = subPoint(ans.p2, l2.vv);
   return ans;
 }
 
@@ -244,8 +246,12 @@ void setup() {
   lines.add(new Line(0, 499, 0, 0));
   lines.add(new Line(0, 0, 499, 0));
   lines.add(new Line(499, 0, 499, 499));
-  lines.add(new Line(50, 50, 449, 449));
-  lines.add(new Line(449, 449, 50, 50));
+  lines.add(new Line(200, 100, 100, 100));
+  lines.add(new Line(200, 200, 200, 100));
+  lines.add(new Line(100, 200, 200, 200));
+  lines.add(new Line(100, 100, 100, 200));
+  lines.add(new Line(10, 10, 50, 50));
+  lines.add(new Line(50, 50, 50, 70));
 }
 
 void draw(){
