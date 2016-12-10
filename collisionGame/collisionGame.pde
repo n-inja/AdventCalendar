@@ -3,6 +3,7 @@
 //class define
 class Point{
   float x, y;
+  
   Point(float nx, float ny){
     x = nx;
     y = ny;
@@ -19,24 +20,28 @@ class Line{
   Point p1, p2;
   Vec pv, vv;
   float l;
+  
   Line(Point np1, Point np2){
     p1 = np1;
     p2 = np2;
     l = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
     pv = new Vec((p2.x - p1.x)/l, (p2.y - p1.y)/l);
-    vv = new Vec(pv.y, -pv.x);
+    vv = new Vec(-pv.y, pv.x);
   }
   Line(float x1, float y1, float x2, float y2){
     this(new Point(x1, y1), new Point(x2, y2));
   }
+  
   void draw(){
     stroke(0, 0, 0);
     strokeWeight(1);
     drawLine(this);
   }
+  
   Vec delta(){
     return subPoint(p2, p1);
   }
+  
   Line clone(){
     return new Line(p1.x, p1.y, p2.x, p2.y);
   }
@@ -47,7 +52,7 @@ class Player{
   Line move;
   
   Player(){
-    pos = new Point(250, 250);
+    pos = new Point(20, 480);
     vel = new Point(0, 0);
     move = new Line(0, 0, 0, 0);
   }
@@ -122,7 +127,6 @@ class Player{
 Player player;
 ArrayList<Line> lines;
 boolean isPressRight, isPressLeft, isPressUp, isPressDown;
-//variable define end
 
 //----------------------------------------------------------
 //function define
@@ -204,6 +208,7 @@ Line foldLine(Line l1, Line l2) {
   float s2 = ((l2.p2.x - l2.p1.x) * (l2.p1.y - l1.p2.y) - (l2.p2.y - l2.p1.y) * (l2.p1.x - l1.p2.x));
   ans.p2.x = l1.p1.x + (l1.p2.x - l1.p1.x) * s1 / (s1 + s2);
   ans.p2.y = l1.p1.y + (l1.p2.y - l1.p1.y) * s1 / (s1 + s2);
+  ans.p2 = subPoint(ans.p2, l2.vv);
   return ans;
 }
 
@@ -241,17 +246,27 @@ void setup() {
   colorMode(RGB,256);
   background(255, 255, 255);
   player = new Player();
+  
+  //stage
   lines = new ArrayList<Line>();
-  lines.add(new Line(499, 499, 0, 499));
-  lines.add(new Line(0, 499, 0, 0));
-  lines.add(new Line(0, 0, 499, 0));
-  lines.add(new Line(499, 0, 499, 499));
+  lines.add(new Line(0, 499, 499, 499));
+  lines.add(new Line(0, 0, 0, 499));
+  lines.add(new Line(499, 0, 0, 0));
+  lines.add(new Line(499, 499, 499, 0));
+  lines.add(new Line(80, 500, 70, 400));
+  lines.add(new Line(70, 400, 90, 390));
+  lines.add(new Line(90, 390, 130, 300));
+  lines.add(new Line(130, 300, 80, 280));
+  lines.add(new Line(80, 280, 230, 150));
+  lines.add(new Line(230, 150, 330, 200));
+  lines.add(new Line(330, 200, 380, 400));
+  lines.add(new Line(380, 400, 380, 500));
+  lines.add(new Line(420, 500, 400, 330));
+  lines.add(new Line(400, 330, 410, 200));
+  lines.add(new Line(410, 200, 200, 100));
   lines.add(new Line(200, 100, 100, 100));
-  lines.add(new Line(200, 200, 200, 100));
-  lines.add(new Line(100, 200, 200, 200));
   lines.add(new Line(100, 100, 100, 200));
-  lines.add(new Line(10, 10, 50, 50));
-  lines.add(new Line(50, 50, 50, 70));
+  lines.add(new Line(100, 200, 0, 300));  
 }
 
 void draw(){
